@@ -6,7 +6,7 @@ class AppTheme {
   static ThemeData get lightTheme {
     return ThemeData(
       useMaterial3: true,
-      fontFamily: 'Inter', // Professional font for admin web
+// fontFamily: 'Inter', // Professional font for admin web
       colorScheme: ColorScheme.fromSeed(
         seedColor: AppColors.primary,
         secondary: AppColors.secondary,
@@ -31,7 +31,7 @@ class AppTheme {
           ),
           padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
           textStyle: const TextStyle(
-            fontFamily: 'Inter',
+            // fontFamily: 'Inter',
             fontWeight: FontWeight.w500,
             fontSize: 15,
           ),
@@ -60,64 +60,55 @@ class AppTheme {
         elevation: 0,
         centerTitle: false,
         titleTextStyle: TextStyle(
-          fontFamily: 'Inter',
+          // fontFamily: 'Inter',
           fontSize: 20,
           fontWeight: FontWeight.w600,
           color: AppColors.textPrimary,
         ),
       ),
-      // Admin Web Typography (Inter font)
+      // Admin Web Typography (default system font until Inter is added)
       textTheme: const TextTheme(
         headlineLarge: TextStyle(
-          fontFamily: 'Inter',
           fontSize: 32,
           fontWeight: FontWeight.w600,
           color: AppColors.textPrimary,
         ),
         headlineMedium: TextStyle(
-          fontFamily: 'Inter',
           fontSize: 24,
           fontWeight: FontWeight.w600,
           color: AppColors.textPrimary,
         ),
         headlineSmall: TextStyle(
-          fontFamily: 'Inter',
           fontSize: 20,
           fontWeight: FontWeight.w600,
           color: AppColors.textPrimary,
         ),
         titleLarge: TextStyle(
-          fontFamily: 'Inter',
           fontSize: 18,
           fontWeight: FontWeight.w600,
           color: AppColors.textPrimary,
         ),
         titleMedium: TextStyle(
-          fontFamily: 'Inter',
           fontSize: 16,
           fontWeight: FontWeight.w600,
           color: AppColors.textPrimary,
         ),
         bodyLarge: TextStyle(
-          fontFamily: 'Inter',
           fontSize: 16,
           fontWeight: FontWeight.normal,
           color: AppColors.textPrimary,
         ),
         bodyMedium: TextStyle(
-          fontFamily: 'Inter',
           fontSize: 14,
           fontWeight: FontWeight.normal,
           color: AppColors.textPrimary,
         ),
         bodySmall: TextStyle(
-          fontFamily: 'Inter',
           fontSize: 12,
           fontWeight: FontWeight.normal,
           color: AppColors.textSecondary,
         ),
         labelLarge: TextStyle(
-          fontFamily: 'Inter',
           fontSize: 15,
           fontWeight: FontWeight.w500,
           color: AppColors.textPrimary,

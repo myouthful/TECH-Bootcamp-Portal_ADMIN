@@ -2,6 +2,9 @@ import 'package:flutter/material.dart';
 import '../utils/app_colors.dart';
 import '../utils/app_routes.dart';
 import 'student_management.dart';
+import 'attendance_management_screen.dart';
+import 'assessment_management_screen.dart';
+import 'analytics_dashboard_screen.dart';
 
 class AdminDashboard extends StatefulWidget {
   const AdminDashboard({super.key});
@@ -191,23 +194,35 @@ class _AdminDashboardState extends State<AdminDashboard> {
 
   String _getPageTitle() {
     switch (_selectedIndex) {
-      case 0: return 'Dashboard Overview';
-      case 1: return 'Student Management';
-      case 2: return 'Attendance Management';
-      case 3: return 'Assessments Management';
-      case 4: return 'Analytics';
-      default: return 'Dashboard Overview';
+      case 0:
+        return 'Dashboard Overview';
+      case 1:
+        return 'Student Management';
+      case 2:
+        return 'Attendance Management';
+      case 3:
+        return 'Assessments Management';
+      case 4:
+        return 'Analytics';
+      default:
+        return 'Dashboard Overview';
     }
   }
 
   String _getPageSubtitle() {
     switch (_selectedIndex) {
-      case 0: return 'Monitor your bootcamp performance and manage student progress';
-      case 1: return 'View and manage all enrolled students';
-      case 2: return 'Track and manage student attendance records';
-      case 3: return 'Create and manage student assessments';
-      case 4: return 'View detailed analytics and reports';
-      default: return 'Monitor your bootcamp performance and manage student progress';
+      case 0:
+        return 'Monitor your bootcamp performance and manage student progress';
+      case 1:
+        return 'View and manage all enrolled students';
+      case 2:
+        return 'Track and manage student attendance records';
+      case 3:
+        return 'Create and manage student assessments';
+      case 4:
+        return 'View detailed analytics and reports';
+      default:
+        return 'Monitor your bootcamp performance and manage student progress';
     }
   }
 
@@ -235,17 +250,15 @@ class _AdminDashboardState extends State<AdminDashboard> {
       case 1:
         return const StudentManagement();
       case 2:
-        return const Center(child: Text('Attendance Management'));
+        return _buildAttendanceContent();
       case 3:
-        return const Center(child: Text('Assessments Management'));
+        return _buildAssessmentContent();
       case 4:
-        return const Center(child: Text('Analytics'));
+        return _buildAnalyticsContent();
       default:
         return _buildDashboardContent();
     }
   }
-
-
 
   Widget _buildDashboardContent() {
     return SingleChildScrollView(
@@ -444,10 +457,30 @@ class _AdminDashboardState extends State<AdminDashboard> {
           Expanded(
             child: ListView(
               children: [
-                _buildActivityItem('Alex Johnson', 'Completed JavaScript Assessment', '2 hours ago', '96%'),
-                _buildActivityItem('Sarah Chen', 'Marked present for Web Development', '3 hours ago', ''),
-                _buildActivityItem('Mike Rodriguez', 'Submitted Portfolio Project', '5 hours ago', '88%'),
-                _buildActivityItem('Emma Thompson', 'Completed Onboarding', '1 day ago', ''),
+                _buildActivityItem(
+                  'Alex Johnson',
+                  'Completed JavaScript Assessment',
+                  '2 hours ago',
+                  '96%',
+                ),
+                _buildActivityItem(
+                  'Sarah Chen',
+                  'Marked present for Web Development',
+                  '3 hours ago',
+                  '',
+                ),
+                _buildActivityItem(
+                  'Mike Rodriguez',
+                  'Submitted Portfolio Project',
+                  '5 hours ago',
+                  '88%',
+                ),
+                _buildActivityItem(
+                  'Emma Thompson',
+                  'Completed Onboarding',
+                  '1 day ago',
+                  '',
+                ),
               ],
             ),
           ),
@@ -456,7 +489,12 @@ class _AdminDashboardState extends State<AdminDashboard> {
     );
   }
 
-  Widget _buildActivityItem(String name, String action, String time, String score) {
+  Widget _buildActivityItem(
+    String name,
+    String action,
+    String time,
+    String score,
+  ) {
     return Padding(
       padding: const EdgeInsets.only(bottom: 12),
       child: Row(
@@ -500,15 +538,15 @@ class _AdminDashboardState extends State<AdminDashboard> {
                   children: [
                     Text(
                       time,
-                      style: TextStyle(
-                        color: Colors.grey[600],
-                        fontSize: 12,
-                      ),
+                      style: TextStyle(color: Colors.grey[600], fontSize: 12),
                     ),
                     if (score.isNotEmpty) ...[
                       const SizedBox(width: 8),
                       Container(
-                        padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 6,
+                          vertical: 2,
+                        ),
                         decoration: BoxDecoration(
                           color: Colors.grey[100],
                           borderRadius: BorderRadius.circular(4),
@@ -545,18 +583,12 @@ class _AdminDashboardState extends State<AdminDashboard> {
         children: [
           const Text(
             'Assessment Progress',
-            style: TextStyle(
-              fontSize: 16,
-              fontWeight: FontWeight.w600,
-            ),
+            style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
           ),
           const SizedBox(height: 4),
           Text(
             'Bootcamp curriculum completion status',
-            style: TextStyle(
-              fontSize: 12,
-              color: Colors.grey[600],
-            ),
+            style: TextStyle(fontSize: 12, color: Colors.grey[600]),
           ),
           const SizedBox(height: 20),
           Row(
@@ -576,15 +608,14 @@ class _AdminDashboardState extends State<AdminDashboard> {
                     LinearProgressIndicator(
                       value: 0.72,
                       backgroundColor: Colors.grey[200],
-                      valueColor: const AlwaysStoppedAnimation<Color>(Color(0xFF4A90E2)),
+                      valueColor: const AlwaysStoppedAnimation<Color>(
+                        Color(0xFF4A90E2),
+                      ),
                     ),
                     const SizedBox(height: 4),
                     const Text(
                       '18/25',
-                      style: TextStyle(
-                        fontSize: 12,
-                        color: Colors.black87,
-                      ),
+                      style: TextStyle(fontSize: 12, color: Colors.black87),
                     ),
                   ],
                 ),
@@ -594,14 +625,14 @@ class _AdminDashboardState extends State<AdminDashboard> {
                 children: [
                   const Text(
                     'Average Grade',
-                    style: TextStyle(
-                      fontSize: 14,
-                      fontWeight: FontWeight.w500,
-                    ),
+                    style: TextStyle(fontSize: 14, fontWeight: FontWeight.w500),
                   ),
                   const SizedBox(height: 8),
                   Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 12,
+                      vertical: 6,
+                    ),
                     decoration: BoxDecoration(
                       color: const Color(0xFF4CAF50),
                       borderRadius: BorderRadius.circular(12),
@@ -641,31 +672,38 @@ class _AdminDashboardState extends State<AdminDashboard> {
               SizedBox(width: 8),
               Text(
                 'Urgent Tasks',
-                style: TextStyle(
-                  fontSize: 16,
-                  fontWeight: FontWeight.w600,
-                ),
+                style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
               ),
             ],
           ),
           const SizedBox(height: 4),
           Text(
             'Items that need immediate attention',
-            style: TextStyle(
-              fontSize: 12,
-              color: Colors.grey[600],
-            ),
+            style: TextStyle(fontSize: 12, color: Colors.grey[600]),
           ),
           const SizedBox(height: 16),
           Expanded(
             child: ListView(
               children: [
-                _buildTaskItem('Review 12 pending assessments', 'HIGH', Colors.red),
-                GestureDetector(
-                  onTap: () => Navigator.pushNamed(context, AppRoutes.attendance),
-                  child: _buildTaskItem('Approve attendance for Dec 10', 'MEDIUM', Colors.orange),
+                _buildTaskItem(
+                  'Review 12 pending assessments',
+                  'HIGH',
+                  Colors.red,
                 ),
-                _buildTaskItem('Update JavaScript curriculum', 'LOW', Colors.grey),
+                GestureDetector(
+                  onTap: () =>
+                      Navigator.pushNamed(context, AppRoutes.attendance),
+                  child: _buildTaskItem(
+                    'Approve attendance for Dec 10',
+                    'MEDIUM',
+                    Colors.orange,
+                  ),
+                ),
+                _buildTaskItem(
+                  'Update JavaScript curriculum',
+                  'LOW',
+                  Colors.grey,
+                ),
               ],
             ),
           ),
@@ -695,14 +733,7 @@ class _AdminDashboardState extends State<AdminDashboard> {
             ),
           ),
           const SizedBox(width: 12),
-          Expanded(
-            child: Text(
-              task,
-              style: const TextStyle(
-                fontSize: 14,
-              ),
-            ),
-          ),
+          Expanded(child: Text(task, style: const TextStyle(fontSize: 14))),
         ],
       ),
     );
@@ -725,27 +756,29 @@ class _AdminDashboardState extends State<AdminDashboard> {
               SizedBox(width: 8),
               Text(
                 'Upcoming Assessments',
-                style: TextStyle(
-                  fontSize: 16,
-                  fontWeight: FontWeight.w600,
-                ),
+                style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
               ),
             ],
           ),
           const SizedBox(height: 4),
           Text(
             'Scheduled assessments this month',
-            style: TextStyle(
-              fontSize: 12,
-              color: Colors.grey[600],
-            ),
+            style: TextStyle(fontSize: 12, color: Colors.grey[600]),
           ),
           const SizedBox(height: 16),
           Expanded(
             child: ListView(
               children: [
-                _buildAssessmentItem('React Fundamentals', 'Dec 15', '45 students'),
-                _buildAssessmentItem('Final Project Presentations', 'Dec 20', '38 students'),
+                _buildAssessmentItem(
+                  'React Fundamentals',
+                  'Dec 15',
+                  '45 students',
+                ),
+                _buildAssessmentItem(
+                  'Final Project Presentations',
+                  'Dec 20',
+                  '38 students',
+                ),
               ],
             ),
           ),
@@ -762,29 +795,29 @@ class _AdminDashboardState extends State<AdminDashboard> {
         children: [
           Text(
             title,
-            style: const TextStyle(
-              fontSize: 14,
-              fontWeight: FontWeight.w500,
-            ),
+            style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w500),
           ),
           const SizedBox(height: 4),
-          Text(
-            date,
-            style: TextStyle(
-              fontSize: 12,
-              color: Colors.grey[600],
-            ),
-          ),
+          Text(date, style: TextStyle(fontSize: 12, color: Colors.grey[600])),
           const SizedBox(height: 2),
           Text(
             students,
-            style: TextStyle(
-              fontSize: 12,
-              color: Colors.grey[600],
-            ),
+            style: TextStyle(fontSize: 12, color: Colors.grey[600]),
           ),
         ],
       ),
     );
+  }
+
+  Widget _buildAttendanceContent() {
+    return const AttendanceManagementScreen();
+  }
+
+  Widget _buildAssessmentContent() {
+    return const AssessmentManagementScreen();
+  }
+
+  Widget _buildAnalyticsContent() {
+    return const AnalyticsDashboardScreen();
   }
 }

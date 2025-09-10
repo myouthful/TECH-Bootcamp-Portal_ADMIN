@@ -41,7 +41,11 @@ class StudentManagement extends StatelessWidget {
                     padding: const EdgeInsets.all(20),
                     child: Row(
                       children: [
-                        const Icon(Icons.people, size: 20, color: Color(0xFF4A90E2)),
+                        const Icon(
+                          Icons.people,
+                          size: 20,
+                          color: Color(0xFF4A90E2),
+                        ),
                         const SizedBox(width: 8),
                         const Text(
                           'Enrolled Students',
@@ -64,18 +68,64 @@ class StudentManagement extends StatelessWidget {
                   const Divider(height: 1),
                   // Table Header
                   Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 20,
+                      vertical: 12,
+                    ),
                     color: Colors.grey[50],
                     child: Row(
                       children: [
-                        const Expanded(flex: 2, child: Text('Student', style: TextStyle(fontWeight: FontWeight.w600))),
-                        const Expanded(flex: 2, child: Text('Contact', style: TextStyle(fontWeight: FontWeight.w600))),
-                        const Expanded(child: Text('Enrollment', style: TextStyle(fontWeight: FontWeight.w600))),
-                        const Expanded(child: Text('Attendance', style: TextStyle(fontWeight: FontWeight.w600))),
-                        const Expanded(child: Text('Grade', style: TextStyle(fontWeight: FontWeight.w600))),
-                        const Expanded(child: Text('Status', style: TextStyle(fontWeight: FontWeight.w600))),
-                        const Expanded(child: Text('Progress', style: TextStyle(fontWeight: FontWeight.w600))),
-                        const SizedBox(width: 80, child: Text('Actions', style: TextStyle(fontWeight: FontWeight.w600))),
+                        const Expanded(
+                          flex: 2,
+                          child: Text(
+                            'Student',
+                            style: TextStyle(fontWeight: FontWeight.w600),
+                          ),
+                        ),
+                        const Expanded(
+                          flex: 2,
+                          child: Text(
+                            'Contact',
+                            style: TextStyle(fontWeight: FontWeight.w600),
+                          ),
+                        ),
+                        const Expanded(
+                          child: Text(
+                            'Enrollment',
+                            style: TextStyle(fontWeight: FontWeight.w600),
+                          ),
+                        ),
+                        const Expanded(
+                          child: Text(
+                            'Attendance',
+                            style: TextStyle(fontWeight: FontWeight.w600),
+                          ),
+                        ),
+                        const Expanded(
+                          child: Text(
+                            'Grade',
+                            style: TextStyle(fontWeight: FontWeight.w600),
+                          ),
+                        ),
+                        const Expanded(
+                          child: Text(
+                            'Status',
+                            style: TextStyle(fontWeight: FontWeight.w600),
+                          ),
+                        ),
+                        const Expanded(
+                          child: Text(
+                            'Progress',
+                            style: TextStyle(fontWeight: FontWeight.w600),
+                          ),
+                        ),
+                        const SizedBox(
+                          width: 80,
+                          child: Text(
+                            'Actions',
+                            style: TextStyle(fontWeight: FontWeight.w600),
+                          ),
+                        ),
                       ],
                     ),
                   ),
@@ -83,11 +133,66 @@ class StudentManagement extends StatelessWidget {
                   Expanded(
                     child: ListView(
                       children: [
-                        _buildStudentRow('Alex Johnson', 'ID: 1', 'alex.johnson@email.com', '+1 (555) 123-4567', '2024-11-15', 'Last: 2 hours ago', '95%', 'A', 'ACTIVE', '8/10 assessments'),
-                        _buildStudentRow('Sarah Chen', 'ID: 2', 'sarah.chen@email.com', '+1 (555) 234-5678', '2024-11-12', 'Last: 1 day ago', '88%', 'A-', 'ACTIVE', '7/10 assessments'),
-                        _buildStudentRow('Mike Rodriguez', 'ID: 3', 'mike.rodriguez@email.com', '+1 (555) 345-6789', '2024-11-10', 'Last: 3 hours ago', '92%', 'B+', 'ACTIVE', '9/10 assessments'),
-                        _buildStudentRow('Emma Thompson', 'ID: 4', 'emma.thompson@email.com', '+1 (555) 456-7890', '2024-11-08', 'Last: 1 week ago', '75%', 'B', 'HOLD', '5/10 assessments'),
-                        _buildStudentRow('David Kim', 'ID: 5', 'david.kim@email.com', '+1 (555) 567-8901', '2024-11-05', 'Last: 2 weeks ago', '82%', 'B-', 'INACTIVE', '6/10 assessments'),
+                        _buildStudentRow(
+                          'Alex Johnson',
+                          'ID: 1',
+                          'alex.johnson@email.com',
+                          '+1 (555) 123-4567',
+                          '2024-11-15',
+                          'Last: 2 hours ago',
+                          '95%',
+                          'A',
+                          'ACTIVE',
+                          '8/10 assessments',
+                        ),
+                        _buildStudentRow(
+                          'Sarah Chen',
+                          'ID: 2',
+                          'sarah.chen@email.com',
+                          '+1 (555) 234-5678',
+                          '2024-11-12',
+                          'Last: 1 day ago',
+                          '88%',
+                          'A-',
+                          'ACTIVE',
+                          '7/10 assessments',
+                        ),
+                        _buildStudentRow(
+                          'Mike Rodriguez',
+                          'ID: 3',
+                          'mike.rodriguez@email.com',
+                          '+1 (555) 345-6789',
+                          '2024-11-10',
+                          'Last: 3 hours ago',
+                          '92%',
+                          'B+',
+                          'ACTIVE',
+                          '9/10 assessments',
+                        ),
+                        _buildStudentRow(
+                          'Emma Thompson',
+                          'ID: 4',
+                          'emma.thompson@email.com',
+                          '+1 (555) 456-7890',
+                          '2024-11-08',
+                          'Last: 1 week ago',
+                          '75%',
+                          'B',
+                          'HOLD',
+                          '5/10 assessments',
+                        ),
+                        _buildStudentRow(
+                          'David Kim',
+                          'ID: 5',
+                          'david.kim@email.com',
+                          '+1 (555) 567-8901',
+                          '2024-11-05',
+                          'Last: 2 weeks ago',
+                          '82%',
+                          'B-',
+                          'INACTIVE',
+                          '6/10 assessments',
+                        ),
                       ],
                     ),
                   ),
@@ -100,7 +205,18 @@ class StudentManagement extends StatelessWidget {
     );
   }
 
-  Widget _buildStudentRow(String name, String id, String email, String phone, String enrollDate, String lastSeen, String attendance, String grade, String status, String progress) {
+  Widget _buildStudentRow(
+    String name,
+    String id,
+    String email,
+    String phone,
+    String enrollDate,
+    String lastSeen,
+    String attendance,
+    String grade,
+    String status,
+    String progress,
+  ) {
     Color statusColor;
     Color statusBgColor;
     switch (status) {
@@ -143,10 +259,7 @@ class StudentManagement extends StatelessWidget {
                 ),
                 Text(
                   id,
-                  style: TextStyle(
-                    fontSize: 12,
-                    color: Colors.grey[600],
-                  ),
+                  style: TextStyle(fontSize: 12, color: Colors.grey[600]),
                 ),
               ],
             ),
@@ -157,16 +270,10 @@ class StudentManagement extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(
-                  email,
-                  style: const TextStyle(fontSize: 12),
-                ),
+                Text(email, style: const TextStyle(fontSize: 12)),
                 Text(
                   phone,
-                  style: TextStyle(
-                    fontSize: 12,
-                    color: Colors.grey[600],
-                  ),
+                  style: TextStyle(fontSize: 12, color: Colors.grey[600]),
                 ),
               ],
             ),
@@ -176,16 +283,10 @@ class StudentManagement extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(
-                  enrollDate,
-                  style: const TextStyle(fontSize: 12),
-                ),
+                Text(enrollDate, style: const TextStyle(fontSize: 12)),
                 Text(
                   lastSeen,
-                  style: TextStyle(
-                    fontSize: 12,
-                    color: Colors.grey[600],
-                  ),
+                  style: TextStyle(fontSize: 12, color: Colors.grey[600]),
                 ),
               ],
             ),
@@ -210,8 +311,8 @@ class StudentManagement extends StatelessWidget {
                       double.parse(attendance.replaceAll('%', '')) >= 90
                           ? Colors.green
                           : double.parse(attendance.replaceAll('%', '')) >= 75
-                              ? Colors.orange
-                              : Colors.red,
+                          ? Colors.orange
+                          : Colors.red,
                     ),
                   ),
                 ),
@@ -260,10 +361,7 @@ class StudentManagement extends StatelessWidget {
           Expanded(
             child: Text(
               progress,
-              style: TextStyle(
-                fontSize: 12,
-                color: Colors.grey[600],
-              ),
+              style: TextStyle(fontSize: 12, color: Colors.grey[600]),
             ),
           ),
           // Actions
