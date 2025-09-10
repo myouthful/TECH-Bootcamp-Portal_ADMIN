@@ -8,7 +8,8 @@ COPY . .
 RUN flutter pub get
 
 # Build release version of Flutter web
-RUN flutter build web --release --web-renderer=html
+RRUN flutter build web --release
+
 
 # Stage 2: Serve with nginx
 FROM nginx:alpine
