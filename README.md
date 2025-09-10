@@ -57,6 +57,11 @@ lib/
 └── main.dart        # App entry point
 ```
 
+## Repositories
+
+- **Main Repository**: [Original Project](<original-repository-url>)
+- **Development Repository**: [Forked Project](<forked-repository-url>) - Active development branch
+
 ## Available Platforms
 
 - Web
