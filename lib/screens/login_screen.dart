@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
+import 'package:shared_preferences/shared_preferences.dart';
 import '../utils/app_routes.dart';
 
 class LoginScreen extends StatefulWidget {
@@ -17,58 +18,67 @@ class _LoginScreenState extends State<LoginScreen> {
   bool _isLoading = false;
   String? _errorMessage;
 
-  Future<void> _login() async {
-    final email = _emailController.text.trim();
-    final password = _passwordController.text.trim();
+ Future<void> _login() async {
+  final email = _emailController.text.trim();
+  final password = _passwordController.text.trim();
 
-    if (email.isEmpty || password.isEmpty) {
-      setState(() {
-        _errorMessage = 'Please enter both email and password.';
-      });
-      return;
-    }
-
+  if (email.isEmpty || password.isEmpty) {
     setState(() {
-      _isLoading = true;
-      _errorMessage = null;
+      _errorMessage = 'Please enter both email and password.';
     });
+    return;
+  }
 
-    try {
-      final response = await http.post(
-        Uri.parse('https://attendancebackend-gjjw.onrender.com/signin'),
-        headers: {'Content-Type': 'application/json'},
-        body: jsonEncode({'email': email, 'password': password}),
-      );
+  setState(() {
+    _isLoading = true;
+    _errorMessage = null;
+  });
 
-      if (response.statusCode == 200) {
-        final data = jsonDecode(response.body);
+  try {
+    final response = await http.post(
+      Uri.parse('https://attendancebackend-gjjw.onrender.com/adminlog'),
+      headers: {'Content-Type': 'application/json'},
+      body: jsonEncode({'email': email, 'password': password}),
+    );
 
-        // expecting a JSON with a token or user data
-        final token = data['token'];
-        if (token != null) {
-          // we should store the token using shared_preferences here
-          Navigator.pushReplacementNamed(context, AppRoutes.dashboard);
-        } else {
-          setState(() {
-            _errorMessage = 'Invalid server response.';
-          });
-        }
+    if (response.statusCode == 200) {
+      final data = jsonDecode(response.body);
+
+      final username = data['username'];
+      final role = data['role'] ?? 'admin';
+
+      if (username != null) {
+        
+        final prefs = await SharedPreferences.getInstance();
+        await prefs.setString('username', username);
+        await prefs.setString('role', role);
+
+        
+        Navigator.pushReplacementNamed(
+          context,
+          AppRoutes.dashboard,
+        );
       } else {
-        final errorData = jsonDecode(response.body);
         setState(() {
-          _errorMessage = errorData['message'] ?? 'Login failed. Try again.';
+          _errorMessage = 'Invalid server response: Missing username.';
         });
       }
-    } catch (error) {
+    } else {
+      final errorData = jsonDecode(response.body);
       setState(() {
-        _errorMessage = 'Network error: $error';
-      });
-    } finally {
-      setState(() {
-        _isLoading = false;
+        _errorMessage = errorData['message'] ?? 'Login failed. Try again.';
       });
     }
+  } catch (error) {
+    setState(() {
+      _errorMessage = 'Network error: $error';
+    });
+  } finally {
+    setState(() {
+      _isLoading = false;
+    });
   }
+}
 
   @override
   Widget build(BuildContext context) {
@@ -146,7 +156,7 @@ class _LoginScreenState extends State<LoginScreen> {
                   style: const TextStyle(color: Colors.red),
                 ),
               const SizedBox(height: 12),
-              // Email field
+              
               TextField(
                 controller: _emailController,
                 decoration: InputDecoration(
