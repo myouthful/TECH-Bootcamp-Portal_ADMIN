@@ -35,7 +35,7 @@ class _LoginScreenState extends State<LoginScreen> {
 
     try {
       final response = await http.post(
-        Uri.parse('https://api.mydreamconnect.org.ng/admin/login'),
+        Uri.parse('https://attendancebackend-gjjw.onrender.com/signin'),
         headers: {'Content-Type': 'application/json'},
         body: jsonEncode({'email': email, 'password': password}),
       );
