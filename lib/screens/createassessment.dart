@@ -53,8 +53,8 @@ class _CreateAssessmentScreenState extends State<CreateAssessmentScreen> {
       _students.clear();
     });
     try {
-      final res = await http
-          .get(Uri.parse('http://localhost:3000/api/students?track=$trackId'));
+      final res = await http.get(
+          Uri.parse('http://localhost:3000/api/students?track=$trackId'));
       if (res.statusCode == 200) {
         setState(() {
           _students = List<Map<String, dynamic>>.from(json.decode(res.body));
@@ -81,6 +81,12 @@ class _CreateAssessmentScreenState extends State<CreateAssessmentScreen> {
     });
   }
 
+  void _removeQuestion(int index) {
+    setState(() {
+      _questions.removeAt(index);
+    });
+  }
+
   Future<void> _submitAssessment(String status) async {
     if (!_formKey.currentState!.validate() || _selectedTrack == null) return;
 
@@ -96,7 +102,7 @@ class _CreateAssessmentScreenState extends State<CreateAssessmentScreen> {
     final body = {
       "title": _titleController.text.trim(),
       "subject": _subjectController.text.trim(),
-      "status": status, // "Draft" or "Active"
+      "status": status,
       "questions": _questions,
       "assignedTo": assignedTo,
     };
@@ -123,9 +129,11 @@ class _CreateAssessmentScreenState extends State<CreateAssessmentScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      // Added AppBar close button for dialog usage
       appBar: AppBar(
-        title: const Text('Create Assessment'),
+        title: const Text(
+          'Create Assessment',
+          style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+        ),
         actions: [
           IconButton(
             icon: const Icon(Icons.close),
@@ -151,8 +159,8 @@ class _CreateAssessmentScreenState extends State<CreateAssessmentScreen> {
                   const SizedBox(height: 16),
                   TextFormField(
                     controller: _subjectController,
-                    decoration: const InputDecoration(
-                        labelText: 'Subject (e.g. Mathematics)'),
+                    decoration:
+                        const InputDecoration(labelText: 'Subject'),
                     validator: (val) =>
                         val == null || val.isEmpty ? 'Required' : null,
                   ),
@@ -176,20 +184,35 @@ class _CreateAssessmentScreenState extends State<CreateAssessmentScreen> {
                   const SizedBox(height: 24),
                   const Text('Questions',
                       style:
-                          TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
+                          TextStyle(fontWeight: FontWeight.bold, fontSize: 18)),
                   ..._questions.asMap().entries.map((entry) {
                     final index = entry.key;
                     final q = entry.value;
                     return Card(
                       margin: const EdgeInsets.symmetric(vertical: 8),
                       child: Padding(
-                        padding: const EdgeInsets.all(8),
+                        padding: const EdgeInsets.all(12),
                         child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                Text('Question ${index + 1}',
+                                    style: const TextStyle(
+                                        fontSize: 16,
+                                        fontWeight: FontWeight.bold)),
+                                IconButton(
+                                  icon: const Icon(Icons.delete,
+                                      color: Colors.redAccent),
+                                  onPressed: () => _removeQuestion(index),
+                                )
+                              ],
+                            ),
                             TextFormField(
                               initialValue: q["questionText"],
-                              decoration: InputDecoration(
-                                  labelText: 'Question ${index + 1}'),
+                              decoration:
+                                  const InputDecoration(labelText: 'Question'),
                               onChanged: (val) =>
                                   _questions[index]["questionText"] = val,
                               validator: (val) =>
@@ -202,9 +225,10 @@ class _CreateAssessmentScreenState extends State<CreateAssessmentScreen> {
                                     labelText: 'Option ${i + 1}'),
                                 onChanged: (val) =>
                                     _questions[index]["options"][i] = val,
-                                validator: (val) => val == null || val.isEmpty
-                                    ? 'Required'
-                                    : null,
+                                validator: (val) =>
+                                    val == null || val.isEmpty
+                                        ? 'Required'
+                                        : null,
                               );
                             }),
                             TextFormField(
@@ -242,10 +266,11 @@ class _CreateAssessmentScreenState extends State<CreateAssessmentScreen> {
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
                                 const Text('Assigned Students:',
-                                    style:
-                                        TextStyle(fontWeight: FontWeight.bold)),
-                                ..._students.map((s) => Text(
-                                    '- ${s['name']} (${s['id']})')).toList(),
+                                    style: TextStyle(
+                                        fontWeight: FontWeight.bold,
+                                        fontSize: 16)),
+                                ..._students.map((s) =>
+                                    Text('- ${s['name']} (${s['id']})')),
                               ],
                             )
                           : const Text('Select a track to load students'),
@@ -256,14 +281,34 @@ class _CreateAssessmentScreenState extends State<CreateAssessmentScreen> {
                       ElevatedButton(
                         onPressed: () => _submitAssessment("Draft"),
                         style: ElevatedButton.styleFrom(
-                            backgroundColor: Colors.grey),
-                        child: const Text('Save as Draft'),
+                          backgroundColor: Colors.grey,
+                          padding: const EdgeInsets.symmetric(
+                              horizontal: 24, vertical: 14),
+                          minimumSize: const Size(120, 48),
+                          shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(10)),
+                        ),
+                        child: const Text(
+                          'Save as Draft',
+                          style: TextStyle(
+                              fontSize: 16, fontWeight: FontWeight.bold),
+                        ),
                       ),
                       ElevatedButton(
                         onPressed: () => _submitAssessment("Active"),
                         style: ElevatedButton.styleFrom(
-                            backgroundColor: Colors.blue),
-                        child: const Text('Publish'),
+                          backgroundColor: Colors.blue,
+                          padding: const EdgeInsets.symmetric(
+                              horizontal: 24, vertical: 14),
+                          minimumSize: const Size(120, 48),
+                          shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(10)),
+                        ),
+                        child: const Text(
+                          'Publish',
+                          style: TextStyle(
+                              fontSize: 16, fontWeight: FontWeight.bold),
+                        ),
                       ),
                     ],
                   )
