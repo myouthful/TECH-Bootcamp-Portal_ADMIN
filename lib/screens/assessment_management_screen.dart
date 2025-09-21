@@ -43,8 +43,6 @@ class _AssessmentManagementScreenState
   bool loading = true;
   bool errorOccurred = false;
 
-  final _headerStyle = TextStyle(fontWeight: FontWeight.w600, fontSize: 12);
-
   @override
   void initState() {
     super.initState();
@@ -261,7 +259,7 @@ class _AssessmentManagementScreenState
           Container(
             color: Colors.grey[50],
             padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-            child: Row(
+            child: const Row(
               children: [
                 Expanded(flex: 2, child: Text('Assessment', style: _headerStyle)),
                 Expanded(flex: 1, child: Text('Subject', style: _headerStyle)),
@@ -300,8 +298,8 @@ class _AssessmentManagementScreenState
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(assessment.title,
-                    style: const TextStyle(
-                        fontWeight: FontWeight.w500, fontSize: 14)),
+                    style:
+                        const TextStyle(fontWeight: FontWeight.w500, fontSize: 14)),
                 Text('Created: ${assessment.createdDate}',
                     style:
                         TextStyle(fontSize: 12, color: AppColors.textSecondary)),
@@ -320,7 +318,13 @@ class _AssessmentManagementScreenState
             ),
           ),
           Expanded(flex: 1, child: Text(assessment.questions)),
-          Expanded(flex: 1, child: _buildStatusChip(assessment.status)),
+
+          // ✅ Status chip fix: remove Expanded so it doesn’t stretch
+          Container(
+            alignment: Alignment.centerLeft,
+            child: _buildStatusChip(assessment.status),
+          ),
+
           Expanded(flex: 1, child: Text(assessment.completion)),
           Expanded(flex: 1, child: Text(assessment.performance)),
           Expanded(
@@ -390,3 +394,6 @@ class _AssessmentManagementScreenState
     );
   }
 }
+
+const _headerStyle =
+    TextStyle(fontWeight: FontWeight.w600, fontSize: 12);
