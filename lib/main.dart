@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'utils/app_theme.dart';
 import 'utils/app_routes.dart';
 
@@ -13,7 +14,12 @@ class AdminApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       title: 'MDC Admin Panel',
-      theme: AppTheme.lightTheme,
+      // Merge light theme with GoogleFonts
+      theme: AppTheme.lightTheme.copyWith(
+        textTheme: GoogleFonts.robotoTextTheme(
+          Theme.of(context).textTheme,
+        ),
+      ),
       initialRoute: AppRoutes.login,
       routes: AppRoutes.routes,
       onGenerateRoute: AppRoutes.onGenerateRoute,
