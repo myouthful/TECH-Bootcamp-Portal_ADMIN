@@ -32,7 +32,7 @@ class _AssessmentManagementScreenState
     });
     try {
       final res =
-          await http.get(Uri.parse(https://attendancebackend-gjjw.onrender.com/assessmentslist'));
+          await http.get(Uri.parse(https://attendancebackend-gjjw.onrender.com/assessment/list'));
       if (res.statusCode == 200) {
         final data = jsonDecode(res.body) as List<dynamic>;
         setState(() {
