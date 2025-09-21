@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'createassessment.dart';
 import '../utils/app_colors.dart';
 
 class AssessmentManagementScreen extends StatefulWidget {
@@ -65,15 +66,33 @@ class _AssessmentManagementScreenState
             mainAxisAlignment: MainAxisAlignment.end,
             children: [
               ElevatedButton.icon(
-                onPressed: () {},
-                icon: const Icon(Icons.add, size: 16),
-                label: const Text('Create Assessment'),
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: AppColors.primary,
-                  foregroundColor: Colors.white,
-                  padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-                ),
-              ),
+  onPressed: () {
+    showDialog(
+      context: context,
+      barrierDismissible: false, // Force explicit close or submit
+      builder: (context) => Dialog(
+        insetPadding: const EdgeInsets.all(24),
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(12),
+        ),
+        child: SizedBox(
+          width: 600, // optional: control width for desktop/web
+          child: CreateAssessmentForm(
+            onClose: () => Navigator.of(context).pop(),
+          ),
+        ),
+      ),
+    );
+  },
+  icon: const Icon(Icons.add, size: 16),
+  label: const Text('Create Assessment'),
+  style: ElevatedButton.styleFrom(
+    backgroundColor: AppColors.primary,
+    foregroundColor: Colors.white,
+    padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+  ),
+),
+
             ],
           ),
           const SizedBox(height: 24),
