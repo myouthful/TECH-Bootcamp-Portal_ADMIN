@@ -38,7 +38,7 @@ class _LoginScreenState extends State<LoginScreen> {
     final response = await http.post(
       Uri.parse('https://attendancebackend-gjjw.onrender.com/adminlog'),
       headers: {'Content-Type': 'application/json'},
-      body: jsonEncode({'email': email, 'password': password}),
+      body: jsonEncode({'username': email, 'password': password}),
     );
 
     if (response.statusCode == 200) {
