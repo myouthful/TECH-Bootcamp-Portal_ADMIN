@@ -77,7 +77,7 @@ class _AssessmentManagementScreenState
         ),
         child: SizedBox(
           width: 600, // optional: control width for desktop/web
-          child: CreateAssessmentForm(
+          child: const CreateAssessmentScreen(
             onClose: () => Navigator.of(context).pop(),
           ),
         ),
