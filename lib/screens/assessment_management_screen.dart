@@ -43,7 +43,7 @@ class _AssessmentManagementScreenState
             return Assessment(
               title: a['title'],
               subject: a['subject'],
-              duration: a['duration']?.toString() ?? '—',
+              duration: '45min',
               questions: '${(a['questions'] as List).length}',
               status: _mapStatus(a['status']),
               completion:
