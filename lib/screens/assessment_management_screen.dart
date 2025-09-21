@@ -5,6 +5,31 @@ import 'package:http/http.dart' as http;
 import 'createassessment.dart';
 import '../utils/app_colors.dart';
 
+
+enum AssessmentStatus { active, completed, draft, scheduled }
+
+class Assessment {
+  final String title;
+  final String subject;
+  final String duration;
+  final String questions;
+  final AssessmentStatus status;
+  final String completion;
+  final String performance;
+  final String createdDate;
+
+  Assessment({
+    required this.title,
+    required this.subject,
+    required this.duration,
+    required this.questions,
+    required this.status,
+    required this.completion,
+    required this.performance,
+    required this.createdDate,
+  });
+}
+
 class AssessmentManagementScreen extends StatefulWidget {
   const AssessmentManagementScreen({super.key});
 
@@ -43,7 +68,7 @@ class _AssessmentManagementScreenState
             return Assessment(
               title: a['title'],
               subject: a['subject'],
-              duration: '45min',
+              duration: '45min', 
               questions: '${(a['questions'] as List).length}',
               status: _mapStatus(a['status']),
               completion:
@@ -324,70 +349,47 @@ class _AssessmentManagementScreenState
     );
   }
 
- Widget _buildStatusChip(AssessmentStatus status) {
-  Color color;
-  String text;
+  Widget _buildStatusChip(AssessmentStatus status) {
+    
+    Color color = Colors.grey;
+    String text = 'draft';
 
-  switch (status) {
-    case AssessmentStatus.active:
-      color = AppColors.success;
-      text = 'active';
-      break;
-    case AssessmentStatus.completed:
-      color = AppColors.primary;
-      text = 'completed';
-      break;
-    case AssessmentStatus.draft:
-      color = Colors.grey;
-      text = 'draft';
-      break;
-    case AssessmentStatus.scheduled:
-      color = AppColors.warning;
-      text = 'scheduled';
-      break;
-  }
+    switch (status) {
+      case AssessmentStatus.active:
+        color = AppColors.success;
+        text = 'active';
+        break;
+      case AssessmentStatus.completed:
+        color = AppColors.primary;
+        text = 'completed';
+        break;
+      case AssessmentStatus.draft:
+        color = Colors.grey;
+        text = 'draft';
+        break;
+      case AssessmentStatus.scheduled:
+        color = AppColors.warning;
+        text = 'scheduled';
+        break;
+    }
 
-  return Container(
-    padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2), // tighter
-    decoration: BoxDecoration(
-      color: color,
-      borderRadius: BorderRadius.circular(8), // smaller corners
-    ),
-    child: Text(
-      text,
-      style: const TextStyle(
-        color: Colors.white,
-        fontSize: 9, // smaller font size
-        fontWeight: FontWeight.w500,
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+      decoration: BoxDecoration(
+        color: color,
+        borderRadius: BorderRadius.circular(8),
       ),
-    ),
-  );
+      child: Text(
+        text,
+        style: const TextStyle(
+          color: Colors.white,
+          fontSize: 9,
+          fontWeight: FontWeight.w500,
+        ),
+      ),
+    );
+  }
 }
-
 
 const _headerStyle =
     TextStyle(fontWeight: FontWeight.w600, fontSize: 12);
-
-enum AssessmentStatus { active, completed, draft, scheduled }
-
-class Assessment {
-  final String title;
-  final String subject;
-  final String duration;
-  final String questions;
-  final AssessmentStatus status;
-  final String completion;
-  final String performance;
-  final String createdDate;
-
-  Assessment({
-    required this.title,
-    required this.subject,
-    required this.duration,
-    required this.questions,
-    required this.status,
-    required this.completion,
-    required this.performance,
-    required this.createdDate,
-  });
-}
