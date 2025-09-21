@@ -53,8 +53,8 @@ class _CreateAssessmentScreenState extends State<CreateAssessmentScreen> {
       _students.clear();
     });
     try {
-      final res = await http.get(
-          Uri.parse('http://localhost:3000/api/students?track=$trackId'));
+      final res = await http
+          .get(Uri.parse('http://localhost:3000/api/students?track=$trackId'));
       if (res.statusCode == 200) {
         setState(() {
           _students = List<Map<String, dynamic>>.from(json.decode(res.body));
@@ -123,7 +123,17 @@ class _CreateAssessmentScreenState extends State<CreateAssessmentScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('Create Assessment')),
+      // Added AppBar close button for dialog usage
+      appBar: AppBar(
+        title: const Text('Create Assessment'),
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.close),
+            tooltip: 'Close',
+            onPressed: () => Navigator.pop(context),
+          ),
+        ],
+      ),
       body: _loadingTracks
           ? const Center(child: CircularProgressIndicator())
           : Form(
@@ -141,8 +151,8 @@ class _CreateAssessmentScreenState extends State<CreateAssessmentScreen> {
                   const SizedBox(height: 16),
                   TextFormField(
                     controller: _subjectController,
-                    decoration:
-                        const InputDecoration(labelText: 'Subject (e.g. Mathematics)'),
+                    decoration: const InputDecoration(
+                        labelText: 'Subject (e.g. Mathematics)'),
                     validator: (val) =>
                         val == null || val.isEmpty ? 'Required' : null,
                   ),
@@ -188,20 +198,19 @@ class _CreateAssessmentScreenState extends State<CreateAssessmentScreen> {
                             ...List.generate(4, (i) {
                               return TextFormField(
                                 initialValue: q["options"][i],
-                                decoration:
-                                    InputDecoration(labelText: 'Option ${i + 1}'),
+                                decoration: InputDecoration(
+                                    labelText: 'Option ${i + 1}'),
                                 onChanged: (val) =>
                                     _questions[index]["options"][i] = val,
-                                validator: (val) =>
-                                    val == null || val.isEmpty
-                                        ? 'Required'
-                                        : null,
+                                validator: (val) => val == null || val.isEmpty
+                                    ? 'Required'
+                                    : null,
                               );
                             }),
                             TextFormField(
                               initialValue: q["correctAnswer"],
-                              decoration:
-                                  const InputDecoration(labelText: 'Correct Answer'),
+                              decoration: const InputDecoration(
+                                  labelText: 'Correct Answer'),
                               onChanged: (val) =>
                                   _questions[index]["correctAnswer"] = val,
                               validator: (val) =>
@@ -233,10 +242,10 @@ class _CreateAssessmentScreenState extends State<CreateAssessmentScreen> {
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
                                 const Text('Assigned Students:',
-                                    style: TextStyle(fontWeight: FontWeight.bold)),
-                                ..._students
-                                    .map((s) => Text('- ${s['name']} (${s['id']})'))
-                                    .toList(),
+                                    style:
+                                        TextStyle(fontWeight: FontWeight.bold)),
+                                ..._students.map((s) => Text(
+                                    '- ${s['name']} (${s['id']})')).toList(),
                               ],
                             )
                           : const Text('Select a track to load students'),
