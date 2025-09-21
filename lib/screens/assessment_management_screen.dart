@@ -31,21 +31,26 @@ class _AssessmentManagementScreenState
       errorOccurred = false;
     });
     try {
-      final res =
-          await http.get(Uri.parse('https://attendancebackend-gjjw.onrender.com/assessment/list'));
+      final res = await http.get(
+        Uri.parse(
+            'https://attendancebackend-gjjw.onrender.com/assessment/list'),
+      );
       if (res.statusCode == 200) {
-        final data = jsonDecode(res.body) as List<dynamic>;
+        final data = jsonDecode(res.body);
+        final List<dynamic> list = data['list'] ?? [];
         setState(() {
-          assessments = data.map((a) {
+          assessments = list.map((a) {
             return Assessment(
               title: a['title'],
               subject: a['subject'],
-              duration: a['duration'] ?? '—',
-              questions: '${a['questions'].length}',
+              duration: a['duration']?.toString() ?? '—',
+              questions: '${(a['questions'] as List).length}',
               status: _mapStatus(a['status']),
-              completion: a['completion'] ?? '0/0',
-              performance: a['performance'] ?? '',
-              createdDate: a['createdDate'] ?? '',
+              completion:
+                  '${a['resultsSummary']?['totalSubmissions'] ?? 0}/${(a['assignedTo'] as List).length}',
+              performance:
+                  '${a['resultsSummary']?['averageScore'] ?? 0}%',
+              createdDate: a['createdAt'] ?? '',
             );
           }).toList();
           loading = false;
@@ -92,7 +97,8 @@ class _AssessmentManagementScreenState
             const SizedBox(height: 8),
             ElevatedButton(
               onPressed: _fetchAssessments,
-              style: ElevatedButton.styleFrom(backgroundColor: AppColors.primary),
+              style:
+                  ElevatedButton.styleFrom(backgroundColor: AppColors.primary),
               child: const Text('Retry'),
             ),
           ],
@@ -215,13 +221,14 @@ class _AssessmentManagementScreenState
                     Icon(Icons.assignment, size: 16, color: AppColors.primary),
                     SizedBox(width: 8),
                     Text('All Assessments',
-                        style:
-                            TextStyle(fontSize: 16, fontWeight: FontWeight.w600)),
+                        style: TextStyle(
+                            fontSize: 16, fontWeight: FontWeight.w600)),
                   ],
                 ),
                 const SizedBox(height: 4),
                 Text('Manage and monitor all student assessments',
-                    style: TextStyle(fontSize: 12, color: AppColors.textSecondary)),
+                    style: TextStyle(
+                        fontSize: 12, color: AppColors.textSecondary)),
               ],
             ),
           ),
