@@ -1,4 +1,7 @@
+import 'dart:convert';
 import 'package:flutter/material.dart';
+import 'package:http/http.dart' as http;
+
 import 'createassessment.dart';
 import '../utils/app_colors.dart';
 
@@ -12,138 +15,153 @@ class AssessmentManagementScreen extends StatefulWidget {
 
 class _AssessmentManagementScreenState
     extends State<AssessmentManagementScreen> {
-  final List<Assessment> assessments = [
-    Assessment(
-      title: 'JavaScript Fundamentals Quiz',
-      subject: 'JavaScript',
-      duration: '15 min',
-      questions: '10\nMultiple Choice, True/False',
-      status: AssessmentStatus.active,
-      completion: '45/50',
-      performance: '87%\n90% pass rate',
-      createdDate: '2024-12-01',
-    ),
-    Assessment(
-      title: 'HTML & CSS Mastery Test',
-      subject: 'Web Development',
-      duration: '20 min',
-      questions: '15\nMultiple Choice, Short Answer',
-      status: AssessmentStatus.completed,
-      completion: '48/50',
-      performance: '82%\n85% pass rate',
-      createdDate: '2024-11-28',
-    ),
-    Assessment(
-      title: 'React Components Assessment',
-      subject: 'React',
-      duration: '25 min',
-      questions: '12\nMultiple Choice, True/False, Short Answer',
-      status: AssessmentStatus.draft,
-      completion: '0/50',
-      performance: '',
-      createdDate: '2024-12-08',
-    ),
-    Assessment(
-      title: 'Final Project Evaluation',
-      subject: 'Full Stack Development',
-      duration: '60 min',
-      questions: '20\nMultiple Choice, Short Answer, Code Review',
-      status: AssessmentStatus.scheduled,
-      completion: '0/50',
-      performance: '',
-      createdDate: '2024-12-05',
-    ),
-  ];
+  List<Assessment> assessments = [];
+  bool loading = true;
+  bool errorOccurred = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _fetchAssessments();
+  }
+
+  Future<void> _fetchAssessments() async {
+    setState(() {
+      loading = true;
+      errorOccurred = false;
+    });
+    try {
+      final res =
+          await http.get(Uri.parse(https://attendancebackend-gjjw.onrender.com/assessmentslist'));
+      if (res.statusCode == 200) {
+        final data = jsonDecode(res.body) as List<dynamic>;
+        setState(() {
+          assessments = data.map((a) {
+            return Assessment(
+              title: a['title'],
+              subject: a['subject'],
+              duration: a['duration'] ?? '—',
+              questions: '${a['questions'].length}',
+              status: _mapStatus(a['status']),
+              completion: a['completion'] ?? '0/0',
+              performance: a['performance'] ?? '',
+              createdDate: a['createdDate'] ?? '',
+            );
+          }).toList();
+          loading = false;
+        });
+      } else {
+        throw Exception('Failed: ${res.statusCode}');
+      }
+    } catch (e) {
+      setState(() {
+        loading = false;
+        errorOccurred = true;
+      });
+      ScaffoldMessenger.of(context)
+          .showSnackBar(SnackBar(content: Text('Error fetching: $e')));
+    }
+  }
+
+  AssessmentStatus _mapStatus(String status) {
+    switch (status.toLowerCase()) {
+      case 'active':
+        return AssessmentStatus.active;
+      case 'completed':
+        return AssessmentStatus.completed;
+      case 'draft':
+        return AssessmentStatus.draft;
+      case 'scheduled':
+        return AssessmentStatus.scheduled;
+      default:
+        return AssessmentStatus.draft;
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
+    if (loading) {
+      return const Center(child: CircularProgressIndicator());
+    }
+    if (errorOccurred) {
+      return Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            const Text('Failed to load assessments.'),
+            const SizedBox(height: 8),
+            ElevatedButton(
+              onPressed: _fetchAssessments,
+              style: ElevatedButton.styleFrom(backgroundColor: AppColors.primary),
+              child: const Text('Retry'),
+            ),
+          ],
+        ),
+      );
+    }
     return Padding(
       padding: const EdgeInsets.all(24),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Row(
-            mainAxisAlignment: MainAxisAlignment.end,
-            children: [
-              ElevatedButton.icon(
-  onPressed: () {
-    showDialog(
-      context: context,
-      barrierDismissible: false, // Force explicit close or submit
-      builder: (context) => Dialog(
-        insetPadding: const EdgeInsets.all(24),
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(12),
-        ),
-        child: SizedBox(
-          width: 600, // optional: control width for desktop/web
-          child: const CreateAssessmentScreen( ),
-        ),
-      ),
-    );
-  },
-  icon: const Icon(Icons.add, size: 16),
-  label: const Text('Create Assessment'),
-  style: ElevatedButton.styleFrom(
-    backgroundColor: AppColors.primary,
-    foregroundColor: Colors.white,
-    padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-  ),
-),
-
-            ],
-          ),
+          Row(mainAxisAlignment: MainAxisAlignment.end, children: [
+            ElevatedButton.icon(
+              onPressed: () async {
+                await showDialog(
+                  context: context,
+                  barrierDismissible: false,
+                  builder: (_) => Dialog(
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                    child: SizedBox(
+                      width: 600,
+                      child: const CreateAssessmentScreen(),
+                    ),
+                  ),
+                );
+                _fetchAssessments(); // refresh after creating new assessment
+              },
+              icon: const Icon(Icons.add, size: 16),
+              label: const Text('Create Assessment'),
+              style: ElevatedButton.styleFrom(
+                backgroundColor: AppColors.primary,
+                foregroundColor: Colors.white,
+              ),
+            ),
+          ]),
           const SizedBox(height: 24),
           _buildStatsCards(),
           const SizedBox(height: 24),
-          _buildAssessmentsTable(),
+          Expanded(
+            child: RefreshIndicator(
+              onRefresh: _fetchAssessments,
+              child: _buildAssessmentsTable(),
+            ),
+          ),
         ],
       ),
     );
   }
 
-  Widget _buildHeader() {
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-      children: [
-        Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            const Text(
-              'Assessment Management',
-              style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
-            ),
-            const SizedBox(height: 4),
-            Text(
-              'Create, manage, and monitor student assessments',
-              style: TextStyle(fontSize: 14, color: AppColors.textSecondary),
-            ),
-          ],
-        ),
-        ElevatedButton.icon(
-          onPressed: () {},
-          icon: const Icon(Icons.add, size: 16),
-          label: const Text('Create Assessment'),
-          style: ElevatedButton.styleFrom(
-            backgroundColor: AppColors.primary,
-            foregroundColor: Colors.white,
-            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-          ),
-        ),
-      ],
-    );
-  }
-
   Widget _buildStatsCards() {
+    final total = assessments.length;
+    final active =
+        assessments.where((a) => a.status == AssessmentStatus.active).length;
+    final completed =
+        assessments.where((a) => a.status == AssessmentStatus.completed).length;
+    final drafts =
+        assessments.where((a) => a.status == AssessmentStatus.draft).length;
+
     return Row(
       children: [
-        _buildStatCard('4', 'Total Assessments', AppColors.primary),
+        _buildStatCard(total.toString(), 'Total Assessments', AppColors.primary),
         const SizedBox(width: 16),
-        _buildStatCard('1', 'Active', AppColors.success),
+        _buildStatCard(active.toString(), 'Active', AppColors.success),
         const SizedBox(width: 16),
-        _buildStatCard('1', 'Completed', AppColors.warning),
+        _buildStatCard(completed.toString(), 'Completed', AppColors.warning),
         const SizedBox(width: 16),
-        _buildStatCard('1', 'Drafts', Colors.grey[400]!),
+        _buildStatCard(drafts.toString(), 'Drafts', Colors.grey),
       ],
     );
   }
@@ -178,146 +196,59 @@ class _AssessmentManagementScreenState
   }
 
   Widget _buildAssessmentsTable() {
-    return Expanded(
-      child: Container(
-        decoration: BoxDecoration(
-          color: AppColors.surface,
-          borderRadius: BorderRadius.circular(8),
-          border: Border.all(color: AppColors.border),
-        ),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Padding(
-              padding: const EdgeInsets.all(16),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  const Row(
-                    children: [
-                      Icon(
-                        Icons.assignment,
-                        size: 16,
-                        color: AppColors.primary,
-                      ),
-                      SizedBox(width: 8),
-                      Text(
-                        'All Assessments',
-                        style: TextStyle(
-                          fontSize: 16,
-                          fontWeight: FontWeight.w600,
-                        ),
-                      ),
-                    ],
-                  ),
-                  const SizedBox(height: 4),
-                  Text(
-                    'Manage and monitor all student assessments',
-                    style: TextStyle(
-                      fontSize: 12,
-                      color: AppColors.textSecondary,
-                    ),
-                  ),
-                ],
-              ),
+    return Container(
+      decoration: BoxDecoration(
+        color: AppColors.surface,
+        borderRadius: BorderRadius.circular(8),
+        border: Border.all(color: AppColors.border),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Padding(
+            padding: const EdgeInsets.all(16),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                const Row(
+                  children: [
+                    Icon(Icons.assignment, size: 16, color: AppColors.primary),
+                    SizedBox(width: 8),
+                    Text('All Assessments',
+                        style:
+                            TextStyle(fontSize: 16, fontWeight: FontWeight.w600)),
+                  ],
+                ),
+                const SizedBox(height: 4),
+                Text('Manage and monitor all student assessments',
+                    style: TextStyle(fontSize: 12, color: AppColors.textSecondary)),
+              ],
             ),
-            Container(
-              color: Colors.grey[50],
-              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-              child: const Row(
-                children: [
-                  Expanded(
-                    flex: 2,
-                    child: Text(
-                      'Assessment',
-                      style: TextStyle(
-                        fontWeight: FontWeight.w600,
-                        fontSize: 12,
-                      ),
-                    ),
-                  ),
-                  Expanded(
-                    flex: 1,
-                    child: Text(
-                      'Subject',
-                      style: TextStyle(
-                        fontWeight: FontWeight.w600,
-                        fontSize: 12,
-                      ),
-                    ),
-                  ),
-                  Expanded(
-                    flex: 1,
-                    child: Text(
-                      'Duration',
-                      style: TextStyle(
-                        fontWeight: FontWeight.w600,
-                        fontSize: 12,
-                      ),
-                    ),
-                  ),
-                  Expanded(
-                    flex: 1,
-                    child: Text(
-                      'Questions',
-                      style: TextStyle(
-                        fontWeight: FontWeight.w600,
-                        fontSize: 12,
-                      ),
-                    ),
-                  ),
-                  Expanded(
-                    flex: 1,
-                    child: Text(
-                      'Status',
-                      style: TextStyle(
-                        fontWeight: FontWeight.w600,
-                        fontSize: 12,
-                      ),
-                    ),
-                  ),
-                  Expanded(
-                    flex: 1,
-                    child: Text(
-                      'Completion',
-                      style: TextStyle(
-                        fontWeight: FontWeight.w600,
-                        fontSize: 12,
-                      ),
-                    ),
-                  ),
-                  Expanded(
-                    flex: 1,
-                    child: Text(
-                      'Performance',
-                      style: TextStyle(
-                        fontWeight: FontWeight.w600,
-                        fontSize: 12,
-                      ),
-                    ),
-                  ),
-                  Expanded(
-                    flex: 1,
-                    child: Text(
-                      'Actions',
-                      style: TextStyle(
-                        fontWeight: FontWeight.w600,
-                        fontSize: 12,
-                      ),
-                    ),
-                  ),
-                ],
-              ),
+          ),
+          Container(
+            color: Colors.grey[50],
+            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+            child: const Row(
+              children: [
+                Expanded(flex: 2, child: Text('Assessment', style: _headerStyle)),
+                Expanded(flex: 1, child: Text('Subject', style: _headerStyle)),
+                Expanded(flex: 1, child: Text('Duration', style: _headerStyle)),
+                Expanded(flex: 1, child: Text('Questions', style: _headerStyle)),
+                Expanded(flex: 1, child: Text('Status', style: _headerStyle)),
+                Expanded(flex: 1, child: Text('Completion', style: _headerStyle)),
+                Expanded(flex: 1, child: Text('Performance', style: _headerStyle)),
+                Expanded(flex: 1, child: Text('Actions', style: _headerStyle)),
+              ],
             ),
-            Expanded(
-              child: ListView.builder(
-                itemCount: assessments.length,
-                itemBuilder: (context, index) =>
-                    _buildAssessmentRow(assessments[index]),
-              ),
+          ),
+          Expanded(
+            child: ListView.builder(
+              itemCount: assessments.length,
+              itemBuilder: (context, index) =>
+                  _buildAssessmentRow(assessments[index]),
             ),
-          ],
-        ),
+          ),
+        ],
       ),
     );
   }
@@ -335,66 +266,30 @@ class _AssessmentManagementScreenState
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(
-                  assessment.title,
-                  style: const TextStyle(
-                    fontWeight: FontWeight.w500,
-                    fontSize: 14,
-                  ),
-                ),
-                Text(
-                  'Created: ${assessment.createdDate}',
-                  style: TextStyle(
-                    fontSize: 12,
-                    color: AppColors.textSecondary,
-                  ),
-                ),
+                Text(assessment.title,
+                    style:
+                        const TextStyle(fontWeight: FontWeight.w500, fontSize: 14)),
+                Text('Created: ${assessment.createdDate}',
+                    style:
+                        TextStyle(fontSize: 12, color: AppColors.textSecondary)),
               ],
             ),
           ),
-          Expanded(
-            flex: 1,
-            child: Text(
-              assessment.subject,
-              style: const TextStyle(fontSize: 14),
-            ),
-          ),
+          Expanded(flex: 1, child: Text(assessment.subject)),
           Expanded(
             flex: 1,
             child: Row(
               children: [
-                const Icon(
-                  Icons.schedule,
-                  size: 12,
-                  color: AppColors.textSecondary,
-                ),
+                const Icon(Icons.schedule, size: 12, color: AppColors.textSecondary),
                 const SizedBox(width: 4),
-                Text(assessment.duration, style: const TextStyle(fontSize: 14)),
+                Text(assessment.duration),
               ],
             ),
           ),
-          Expanded(
-            flex: 1,
-            child: Text(
-              assessment.questions,
-              style: const TextStyle(fontSize: 12),
-            ),
-          ),
+          Expanded(flex: 1, child: Text(assessment.questions)),
           Expanded(flex: 1, child: _buildStatusChip(assessment.status)),
-          Expanded(
-            flex: 1,
-            child: Text(
-              assessment.completion,
-              style: const TextStyle(fontSize: 12),
-            ),
-          ),
-          Expanded(
-            flex: 1,
-            child: Text(
-              assessment.performance,
-              style: const TextStyle(fontSize: 12),
-            ),
-          ),
+          Expanded(flex: 1, child: Text(assessment.completion)),
+          Expanded(flex: 1, child: Text(assessment.performance)),
           Expanded(
             flex: 1,
             child: Row(
@@ -451,17 +346,15 @@ class _AssessmentManagementScreenState
         color: color,
         borderRadius: BorderRadius.circular(12),
       ),
-      child: Text(
-        text,
-        style: const TextStyle(
-          color: Colors.white,
-          fontSize: 10,
-          fontWeight: FontWeight.w500,
-        ),
-      ),
+      child: Text(text,
+          style: const TextStyle(
+              color: Colors.white, fontSize: 10, fontWeight: FontWeight.w500)),
     );
   }
 }
+
+const _headerStyle =
+    TextStyle(fontWeight: FontWeight.w600, fontSize: 12);
 
 enum AssessmentStatus { active, completed, draft, scheduled }
 
