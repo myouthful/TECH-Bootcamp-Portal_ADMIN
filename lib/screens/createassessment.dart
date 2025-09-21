@@ -15,7 +15,7 @@ class _CreateAssessmentScreenState extends State<CreateAssessmentScreen> {
   final _subjectController = TextEditingController();
 
   String? _selectedTrack;
-  List<Map<String, dynamic>> _tracks = [];
+  List<String> _tracks = [];
   List<Map<String, dynamic>> _students = [];
   List<Map<String, dynamic>> _questions = [];
 
@@ -31,10 +31,13 @@ class _CreateAssessmentScreenState extends State<CreateAssessmentScreen> {
   Future<void> _fetchTracks() async {
     setState(() => _loadingTracks = true);
     try {
-      final res = await http.get(Uri.parse('http://localhost:3000/api/tracks'));
+      final res = await http
+          .get(Uri.parse('https://attendancebackend-gjjw.onrender.com/tracks'));
       if (res.statusCode == 200) {
+        final data = json.decode(res.body);
+        // backend returns { success: true, tracks: [...] }
         setState(() {
-          _tracks = List<Map<String, dynamic>>.from(json.decode(res.body));
+          _tracks = List<String>.from(data['tracks']);
           _loadingTracks = false;
         });
       } else {
@@ -47,28 +50,39 @@ class _CreateAssessmentScreenState extends State<CreateAssessmentScreen> {
     }
   }
 
-  Future<void> _fetchStudents(String trackId) async {
-    setState(() {
-      _loadingStudents = true;
-      _students.clear();
-    });
-    try {
-      final res = await http.get(
-          Uri.parse('http://localhost:3000/api/students?track=$trackId'));
-      if (res.statusCode == 200) {
-        setState(() {
-          _students = List<Map<String, dynamic>>.from(json.decode(res.body));
-          _loadingStudents = false;
-        });
-      } else {
-        throw Exception('Failed to fetch students');
-      }
-    } catch (e) {
-      setState(() => _loadingStudents = false);
-      ScaffoldMessenger.of(context)
-          .showSnackBar(SnackBar(content: Text('Error: $e')));
+  Future<void> _fetchStudents(String trackName) async {
+  setState(() {
+    _loadingStudents = true;
+    _students.clear();
+  });
+
+  try {
+    final encoded = Uri.encodeComponent(trackName);
+    final url = 'https://attendancebackend-gjjw.onrender.com/tracks/$encoded';
+    final res = await http.get(Uri.parse(url));
+
+    if (res.statusCode == 200) {
+      final data = json.decode(res.body);
+
+      // Support either { success: true, students: [...] } OR raw students array
+      final studentsData = data is List
+          ? data
+          : (data['students'] ?? data['studentsList'] ?? []);
+
+      setState(() {
+        _students = List<Map<String, dynamic>>.from(studentsData);
+        _loadingStudents = false;
+      });
+    } else {
+      throw Exception('Failed to fetch students (${res.statusCode})');
     }
+  } catch (e) {
+    setState(() => _loadingStudents = false);
+    ScaffoldMessenger.of(context)
+      .showSnackBar(SnackBar(content: Text('Error: $e')));
   }
+}
+
 
   void _addQuestion() {
     setState(() {
@@ -92,8 +106,8 @@ class _CreateAssessmentScreenState extends State<CreateAssessmentScreen> {
 
     final assignedTo = _students
         .map((s) => {
-              "studentId": s['id'],
-              "name": s['name'],
+              "studentId": s['student_id'],
+              "name": "${s['firstname']} ${s['lastname']}",
               "completionStatus": "Pending",
               "score": null
             })
@@ -159,8 +173,7 @@ class _CreateAssessmentScreenState extends State<CreateAssessmentScreen> {
                   const SizedBox(height: 16),
                   TextFormField(
                     controller: _subjectController,
-                    decoration:
-                        const InputDecoration(labelText: 'Subject'),
+                    decoration: const InputDecoration(labelText: 'Subject'),
                     validator: (val) =>
                         val == null || val.isEmpty ? 'Required' : null,
                   ),
@@ -170,8 +183,8 @@ class _CreateAssessmentScreenState extends State<CreateAssessmentScreen> {
                     decoration: const InputDecoration(labelText: 'Select Track'),
                     items: _tracks
                         .map((track) => DropdownMenuItem<String>(
-                              value: track['id'],
-                              child: Text(track['name']),
+                              value: track,
+                              child: Text(track),
                             ))
                         .toList(),
                     onChanged: (val) {
@@ -269,8 +282,8 @@ class _CreateAssessmentScreenState extends State<CreateAssessmentScreen> {
                                     style: TextStyle(
                                         fontWeight: FontWeight.bold,
                                         fontSize: 16)),
-                                ..._students.map((s) =>
-                                    Text('- ${s['name']} (${s['id']})')),
+                                ..._students.map((s) => Text(
+                                    '- ${s['firstname']} ${s['lastname']} (${s['student_id']})')),
                               ],
                             )
                           : const Text('Select a track to load students'),
@@ -283,15 +296,15 @@ class _CreateAssessmentScreenState extends State<CreateAssessmentScreen> {
                         style: ElevatedButton.styleFrom(
                           backgroundColor: Colors.grey,
                           padding: const EdgeInsets.symmetric(
-                              horizontal: 24, vertical: 14),
-                          minimumSize: const Size(120, 48),
+                              horizontal: 28, vertical: 18),
+                          minimumSize: const Size(140, 52),
                           shape: RoundedRectangleBorder(
                               borderRadius: BorderRadius.circular(10)),
                         ),
                         child: const Text(
                           'Save as Draft',
                           style: TextStyle(
-                              fontSize: 16, fontWeight: FontWeight.bold),
+                              fontSize: 17, fontWeight: FontWeight.bold),
                         ),
                       ),
                       ElevatedButton(
@@ -299,15 +312,15 @@ class _CreateAssessmentScreenState extends State<CreateAssessmentScreen> {
                         style: ElevatedButton.styleFrom(
                           backgroundColor: Colors.blue,
                           padding: const EdgeInsets.symmetric(
-                              horizontal: 24, vertical: 14),
-                          minimumSize: const Size(120, 48),
+                              horizontal: 28, vertical: 18),
+                          minimumSize: const Size(140, 52),
                           shape: RoundedRectangleBorder(
                               borderRadius: BorderRadius.circular(10)),
                         ),
                         child: const Text(
                           'Publish',
                           style: TextStyle(
-                              fontSize: 16, fontWeight: FontWeight.bold),
+                              fontSize: 17, fontWeight: FontWeight.bold),
                         ),
                       ),
                     ],
