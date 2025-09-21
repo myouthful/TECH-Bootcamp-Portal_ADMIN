@@ -43,6 +43,8 @@ class _AssessmentManagementScreenState
   bool loading = true;
   bool errorOccurred = false;
 
+  final _headerStyle = TextStyle(fontWeight: FontWeight.w600, fontSize: 12);
+
   @override
   void initState() {
     super.initState();
@@ -67,7 +69,7 @@ class _AssessmentManagementScreenState
             return Assessment(
               title: a['title'],
               subject: a['subject'],
-              duration: '45min', 
+              duration: '45min',
               questions: '${(a['questions'] as List).length}',
               status: _mapStatus(a['status']),
               completion:
@@ -259,7 +261,7 @@ class _AssessmentManagementScreenState
           Container(
             color: Colors.grey[50],
             padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-            child: const Row(
+            child: Row(
               children: [
                 Expanded(flex: 2, child: Text('Assessment', style: _headerStyle)),
                 Expanded(flex: 1, child: Text('Subject', style: _headerStyle)),
@@ -272,8 +274,7 @@ class _AssessmentManagementScreenState
               ],
             ),
           ),
-          // ✅ Changed from Expanded to Flexible
-          Flexible(
+          Expanded(
             child: ListView.builder(
               itemCount: assessments.length,
               itemBuilder: (context, index) =>
@@ -299,8 +300,8 @@ class _AssessmentManagementScreenState
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(assessment.title,
-                    style:
-                        const TextStyle(fontWeight: FontWeight.w500, fontSize: 14)),
+                    style: const TextStyle(
+                        fontWeight: FontWeight.w500, fontSize: 14)),
                 Text('Created: ${assessment.createdDate}',
                     style:
                         TextStyle(fontSize: 12, color: AppColors.textSecondary)),
@@ -321,4 +322,71 @@ class _AssessmentManagementScreenState
           Expanded(flex: 1, child: Text(assessment.questions)),
           Expanded(flex: 1, child: _buildStatusChip(assessment.status)),
           Expanded(flex: 1, child: Text(assessment.completion)),
-          Expanded(flex: 1
+          Expanded(flex: 1, child: Text(assessment.performance)),
+          Expanded(
+            flex: 1,
+            child: Row(
+              children: [
+                IconButton(
+                  icon: const Icon(Icons.visibility, size: 16),
+                  onPressed: () {},
+                  tooltip: 'View',
+                ),
+                IconButton(
+                  icon: const Icon(Icons.edit, size: 16),
+                  onPressed: () {},
+                  tooltip: 'Edit',
+                ),
+                IconButton(
+                  icon: const Icon(Icons.bar_chart, size: 16),
+                  onPressed: () {},
+                  tooltip: 'Results',
+                ),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildStatusChip(AssessmentStatus status) {
+    Color color = Colors.grey;
+    String text = 'draft';
+
+    switch (status) {
+      case AssessmentStatus.active:
+        color = AppColors.success;
+        text = 'active';
+        break;
+      case AssessmentStatus.completed:
+        color = AppColors.primary;
+        text = 'completed';
+        break;
+      case AssessmentStatus.draft:
+        color = Colors.grey;
+        text = 'draft';
+        break;
+      case AssessmentStatus.scheduled:
+        color = AppColors.warning;
+        text = 'scheduled';
+        break;
+    }
+
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+      decoration: BoxDecoration(
+        color: color,
+        borderRadius: BorderRadius.circular(8),
+      ),
+      child: Text(
+        text,
+        style: const TextStyle(
+          color: Colors.white,
+          fontSize: 9,
+          fontWeight: FontWeight.w500,
+        ),
+      ),
+    );
+  }
+}
