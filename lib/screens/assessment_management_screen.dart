@@ -324,41 +324,46 @@ class _AssessmentManagementScreenState
     );
   }
 
-  Widget _buildStatusChip(AssessmentStatus status) {
-    Color color;
-    String text;
+ Widget _buildStatusChip(AssessmentStatus status) {
+  Color color;
+  String text;
 
-    switch (status) {
-      case AssessmentStatus.active:
-        color = AppColors.success;
-        text = 'active';
-        break;
-      case AssessmentStatus.completed:
-        color = AppColors.primary;
-        text = 'completed';
-        break;
-      case AssessmentStatus.draft:
-        color = Colors.grey;
-        text = 'draft';
-        break;
-      case AssessmentStatus.scheduled:
-        color = AppColors.warning;
-        text = 'scheduled';
-        break;
-    }
-
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-      decoration: BoxDecoration(
-        color: color,
-        borderRadius: BorderRadius.circular(12),
-      ),
-      child: Text(text,
-          style: const TextStyle(
-              color: Colors.white, fontSize: 10, fontWeight: FontWeight.w500)),
-    );
+  switch (status) {
+    case AssessmentStatus.active:
+      color = AppColors.success;
+      text = 'active';
+      break;
+    case AssessmentStatus.completed:
+      color = AppColors.primary;
+      text = 'completed';
+      break;
+    case AssessmentStatus.draft:
+      color = Colors.grey;
+      text = 'draft';
+      break;
+    case AssessmentStatus.scheduled:
+      color = AppColors.warning;
+      text = 'scheduled';
+      break;
   }
+
+  return Container(
+    padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2), // tighter
+    decoration: BoxDecoration(
+      color: color,
+      borderRadius: BorderRadius.circular(8), // smaller corners
+    ),
+    child: Text(
+      text,
+      style: const TextStyle(
+        color: Colors.white,
+        fontSize: 9, // smaller font size
+        fontWeight: FontWeight.w500,
+      ),
+    ),
+  );
 }
+
 
 const _headerStyle =
     TextStyle(fontWeight: FontWeight.w600, fontSize: 12);
