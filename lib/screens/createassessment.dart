@@ -123,7 +123,7 @@ class _CreateAssessmentScreenState extends State<CreateAssessmentScreen> {
 
     try {
       final res = await http.post(
-        Uri.parse('http://localhost:3000/api/assessments'),
+        Uri.parse('https://attendancebackend-gjjw.onrender.com/assessment'),
         headers: {'Content-Type': 'application/json'},
         body: json.encode(body),
       );
